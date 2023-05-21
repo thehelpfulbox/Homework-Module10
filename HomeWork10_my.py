@@ -47,12 +47,11 @@ class Record:
         return f'{phone} was not found in list'
     
     def change_phone(self, old_phone: Phone, new_phone: Phone):
-        try:
-            phone_index = self.phones.index(old_phone)
-            self.phones[phone_index] = new_phone
-            return f"Phone number {old_phone} has been substituted with {new_phone} for contact {self.name}"
-        except ValueError:
-            return f'{old_phone} not in list'
+        for p in self.phones:
+            if p.value == old_phone.value:
+                self.phones[self.phones.index(p)] = new_phone
+                return f"Phone number {old_phone} has been substituted with {new_phone} for contact {self.name}"
+        return f'{old_phone} not in list'
  
     
 class Addressbook(UserDict):
@@ -119,10 +118,12 @@ def change_phone(*data):
     name = Name(data[0].lower().capitalize())
     old_phone = Phone(data[1])
     new_phone = Phone(data[2])
-    if contacts.get(name.value):
-        old_index = contacts[name].phones.index(old_phone)
-        contacts[name].phones[old_index] = new_phone
-        return f"Phone number for contact {name} changed"
+    rec = contacts.get(str(name))
+    if rec:
+        return rec.change_phone(old_phone, new_phone)
+        # old_index = contacts[name].phones.index(old_phone)
+        # contacts[name].phones[old_index] = new_phone
+        # return f"Phone number for contact {name} changed"
     return f"No contact with name {name}"
 
 
